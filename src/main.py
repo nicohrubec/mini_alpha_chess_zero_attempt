@@ -1,5 +1,5 @@
 import chess
-from State import State
+from training.state import State
 
 if __name__ == '__main__':
     board = chess.Board()
