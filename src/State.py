@@ -1,5 +1,7 @@
 import numpy as np
 
+from utils import onehot_board
+
 white_pieces = {'P': 1, 'B': 2, 'N': 3, 'R': 4, 'Q': 5, 'K': 6}
 black_pieces = {'p': 1, 'b': 2, 'n': 3, 'r': 4, 'q': 5, 'k': 6}
 board_shape = (8, 8)
@@ -21,9 +23,9 @@ class State:
 
     def get_board_representation(self):  # get board representation
         # 8 = position player + position opponent + color + n moves + castling rights queen and kingside each
-        state = np.zeros((8, 8, 8))
-        white_board = np.zeros(board_shape)  # current player
-        black_board = np.zeros(board_shape)  # opposing player
+        state = np.zeros((18, 8, 8))
+        white_board = np.zeros(board_shape, dtype=np.int)  # current player
+        black_board = np.zeros(board_shape, dtype=np.int)  # opposing player
 
         for i in range(64):
             piece = str(self.board.piece_at(i))
@@ -38,24 +40,34 @@ class State:
                 pass
 
         if self.move_count % 2 == 0:  # white playing
-            state[0] = white_board  # current player piece positions
-            state[1] = black_board  # opposing player piece positions
-            state[2] = np.zeros(board_shape)  # color of current player
+            state[0] = np.zeros(board_shape)  # color of current player
+
             # set castling rights
-            state[3] = np.full(board_shape, self.board.has_kingside_castling_rights(color=0))
-            state[4] = np.full(board_shape, self.board.has_queenside_castling_rights(color=0))
-            state[5] = np.full(board_shape, self.board.has_kingside_castling_rights(color=1))
-            state[6] = np.full(board_shape, self.board.has_queenside_castling_rights(color=1))
-        else:  # black playing
-            state[0] = np.fliplr(np.flipud(black_board))
-            state[1] = np.fliplr(np.flipud(white_board))
-            state[2] = np.ones(board_shape)
+            state[1] = np.full(board_shape, self.board.has_kingside_castling_rights(color=0))
+            state[2] = np.full(board_shape, self.board.has_queenside_castling_rights(color=0))
             state[3] = np.full(board_shape, self.board.has_kingside_castling_rights(color=1))
             state[4] = np.full(board_shape, self.board.has_queenside_castling_rights(color=1))
-            state[5] = np.full(board_shape, self.board.has_kingside_castling_rights(color=0))
-            state[6] = np.full(board_shape, self.board.has_queenside_castling_rights(color=0))
 
-        state[7] = np.full(board_shape, self.move_count)  # how many moves
+            # put together piece encodings for both players
+            # shape (6, 8, 8) per player --> one plane per piece
+            white_board = onehot_board(white_board)
+            black_board = onehot_board(black_board)
+            board_encode = np.concatenate((white_board, black_board), axis=0)
+
+        else:  # black playing
+            # encoding the same as for white just switch the constants and align the board so that it faces black
+            state[0] = np.ones(board_shape)
+            state[1] = np.full(board_shape, self.board.has_kingside_castling_rights(color=1))
+            state[2] = np.full(board_shape, self.board.has_queenside_castling_rights(color=1))
+            state[3] = np.full(board_shape, self.board.has_kingside_castling_rights(color=0))
+            state[4] = np.full(board_shape, self.board.has_queenside_castling_rights(color=0))
+
+            black_board = onehot_board(np.fliplr(np.flipud(black_board)))
+            white_board = onehot_board(np.fliplr(np.flipud(white_board)))
+            board_encode = np.concatenate((black_board, white_board), axis=0)
+
+        state[5] = np.full(board_shape, self.move_count)  # how many moves
+        state[6:] = board_encode
 
         return state
 
