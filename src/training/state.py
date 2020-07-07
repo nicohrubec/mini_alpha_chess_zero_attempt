@@ -15,9 +15,9 @@ class State:
         self.player = 0  # white begins
         self.state = self.get_board_representation()
 
-    def update_game(self, board):
-        self.board = board
+    def make_move(self, move):
         self.move_count += 1
+        self.board.push(move)
         self.player = 1 if self.player == 0 else 0
         self.state = self.get_board_representation()
 
@@ -75,3 +75,12 @@ class State:
         print(self.board)
         print("Currently {} moves have been played.".format(self.move_count))
         print("Player {} is next.".format(self.player))
+
+    def get_num_moves(self):
+        return self.move_count
+
+    def is_game_ended(self):
+        return self.board.is_checkmate()
+
+    def get_legal_moves(self):
+        return self.board.legal_moves
