@@ -21,6 +21,12 @@ class State:
         self.player = 1 if self.player == 0 else 0
         self.state = self.get_board_representation()
 
+    def undo_last_move(self):
+        self.move_count -= 1
+        self.board.pop()
+        self.player = 1 if self.player == 0 else 0
+        self.state = self.get_board_representation()
+
     def get_board_representation(self):  # get board representation
         # 8 = position player + position opponent + color + n moves + castling rights queen and kingside each
         state = np.zeros((18, 8, 8))
@@ -84,3 +90,9 @@ class State:
 
     def get_legal_moves(self):
         return self.board.legal_moves
+
+    def get_state(self):
+        return self.state
+
+    def get_player(self):
+        return self.player
