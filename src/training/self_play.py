@@ -32,11 +32,12 @@ def play_self_play_game(game, player, max_game_length=100, n_playouts=10):
 
 def get_move_values(game, player, n_playouts):
     move_values = {}
+    visited = {}
 
     for move in game.get_legal_moves():
         # monte carlo value for move determined by mean over n rollouts starting from new state after picking the move
         game.make_move(move)
-        move_values[str(move)] = np.mean([do_playout(game, player) for i in range(0, n_playouts)])
+        move_values[str(move)] = np.mean([do_playout(game, player, visited) for i in range(0, n_playouts)])
         # get back to actual state
         game.undo_last_move()
 
@@ -45,10 +46,18 @@ def get_move_values(game, player, n_playouts):
     return move_values
 
 
-def do_playout(game, player):
+def do_playout(game, player, visited):
     if game.is_game_ended():
         player.log([game.get_state(), -1])  # current player lost --> value -1
         return -1
+
+    if hash(game) not in visited:  # new state encountered
+        visited[hash(game)] = 1
+        value = -player.predict(game.get_state())
+
+        return -value
+    else:  # state was already visited
+        visited[hash(game)] += 1
 
     heuristic_move_values = {}
 
@@ -62,7 +71,7 @@ def do_playout(game, player):
     # print(heuristic_move_values)
     move = pick_move(heuristic_move_values)
     game.make_move(move)
-    value = -do_playout(game, player)
+    value = -do_playout(game, player, visited)
     game.undo_last_move()
 
     # add state value pair to training samples
