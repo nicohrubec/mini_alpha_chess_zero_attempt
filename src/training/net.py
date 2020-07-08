@@ -7,10 +7,10 @@ class ResLayer(nn.Module):
 
     def __init__(self):
         super(ResLayer, self).__init__()
-        self.conv1 = nn.Conv2d(in_channels=128, out_channels=128, kernel_size=(3, 3), stride=1)
+        self.conv1 = nn.Conv2d(in_channels=128, out_channels=128, kernel_size=(3, 3), stride=1, padding=1)
         self.batch_norm1 = nn.BatchNorm2d(128)
 
-        self.conv2 = nn.Conv2d(in_channels=128, out_channels=128, kernel_size=(3, 3), stride=1)
+        self.conv2 = nn.Conv2d(in_channels=128, out_channels=128, kernel_size=(3, 3), stride=1, padding=1)
         self.batch_norm2 = nn.BatchNorm2d(128)
 
     def forward(self, x):
@@ -41,9 +41,11 @@ class ResNet(nn.Module):
         self.res_layer5 = ResLayer()
 
         self.val_conv = nn.Conv2d(in_channels=128, out_channels=128, kernel_size=(1, 1), stride=1)
+        self.avg_pool = nn.AdaptiveAvgPool2d((1, 1))
         self.val_batch_norm = nn.BatchNorm2d(128)
         self.val_lin1 = nn.Linear(128, 256)
         self.val_lin2 = nn.Linear(256, 1)
+        self.out = nn.Tanh()
 
     def forward(self, state):
         # input conv layer
@@ -62,9 +64,11 @@ class ResNet(nn.Module):
         v = self.val_conv(x)
         v = self.val_batch_norm(v)
         v = F.relu(v)
+        v = self.avg_pool(v)
+        v = v.view(x.shape[0], x.shape[1])
         v = self.val_lin1(v)
         v = F.relu(v)
         v = self.val_lin2(v)
-        v = F.tanh(v)
+        v = self.out(v)
 
         return v

@@ -17,7 +17,12 @@ class State:
 
     def make_move(self, move):
         self.move_count += 1
-        self.board.push(move)
+
+        if isinstance(move, str):
+            self.board.push_uci(move)
+        else:
+            self.board.push(move)
+
         self.player = 1 if self.player == 0 else 0
         self.state = self.get_board_representation()
 
