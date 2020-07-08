@@ -14,6 +14,7 @@ class State:
         self.move_count = 0
         self.player = 0  # white begins
         self.state = self.get_board_representation()
+        self.hash_state = hash(str(self.board))
 
     def make_move(self, move):
         self.move_count += 1
@@ -101,3 +102,11 @@ class State:
 
     def get_player(self):
         return self.player
+
+    def __hash__(self):
+        return hash((self.hash_state, self.move_count, self.player))
+
+    def __eq__(self, other):
+        return self.hash_state == other.hash_state and \
+               self.move_count == other.move_count and \
+               self.player == other.player
