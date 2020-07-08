@@ -25,7 +25,7 @@ class Player:
     def predict(self, state):
         state = torch.tensor(state, dtype=torch.float32).to(self.device)
         state = torch.unsqueeze(state, 0)
-        return self.net(state)  # return a heuristic value from the neural network for a given state
+        return self.net(state).cpu()  # return a heuristic value from the neural network for a given state
 
     def load_checkpoint(self, model_name):
         raise NotImplementedError  # if you wanna continue training from previously saved checkpoint

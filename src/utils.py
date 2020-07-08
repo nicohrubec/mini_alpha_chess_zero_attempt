@@ -1,5 +1,6 @@
 import numpy as np
 
+
 #  Taken from:
 #  https://stackoverflow.com/questions/36960320/convert-a-2d-matrix-to-a-3d-one-hot-matrix-numpy
 def onehot_board(a):

@@ -47,8 +47,8 @@ def get_move_values(game, player, n_playouts):
 
 def do_playout(game, player):
     if game.is_game_ended():
-        player.log(game.get_state(), -1)  # current player lost --> value -1
-        return 1
+        player.log([game.get_state(), -1])  # current player lost --> value -1
+        return -1
 
     heuristic_move_values = {}
 
@@ -59,6 +59,7 @@ def do_playout(game, player):
         game.undo_last_move()
 
     # play on
+    # print(heuristic_move_values)
     move = pick_move(heuristic_move_values)
     game.make_move(move)
     value = -do_playout(game, player)
