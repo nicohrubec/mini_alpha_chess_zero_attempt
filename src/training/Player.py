@@ -23,9 +23,12 @@ class Player:
         raise NotImplementedError  # sample and train with batches
 
     def predict(self, state):
+        self.net.eval()
         state = torch.tensor(state, dtype=torch.float32).to(self.device)
         state = torch.unsqueeze(state, 0)
-        return self.net(state).cpu().item()  # return a heuristic value from the neural network for a given state
+        with torch.no_grad():
+            v = self.net(state).cpu().item()
+        return v  # return a heuristic value from the neural network for a given state
 
     def load_checkpoint(self, model_name):
         raise NotImplementedError  # if you wanna continue training from previously saved checkpoint

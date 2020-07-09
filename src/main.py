@@ -6,4 +6,4 @@ if __name__ == '__main__':
     board = chess.Board()
     game = State(board)
 
-    play_n_self_play_games(game, n_games=1, max_game_length=5, n_playouts=2)
+    play_n_self_play_games(game, n_games=1, max_game_length=60, n_playouts=10)

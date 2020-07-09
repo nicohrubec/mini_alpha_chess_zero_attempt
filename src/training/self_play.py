@@ -76,6 +76,7 @@ def do_playout(game, player, visited, max_game_length):
 
     # play on
     # print(heuristic_move_values)
+    # print(game.get_num_moves())
     move = pick_move(heuristic_move_values)
     game.make_move(move)
     value = -do_playout(game, player, visited, max_game_length)
