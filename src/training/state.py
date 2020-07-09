@@ -91,8 +91,11 @@ class State:
     def get_num_moves(self):
         return self.move_count
 
-    def is_game_ended(self):
+    def is_checkmate(self):
         return self.board.is_checkmate()
+
+    def is_game_ended(self):
+        return self.board.is_game_over()
 
     def get_legal_moves(self):
         return self.board.legal_moves
