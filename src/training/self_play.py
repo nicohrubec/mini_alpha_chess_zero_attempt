@@ -1,6 +1,7 @@
-import torch
-import numpy as np
 from copy import deepcopy
+
+import numpy as np
+import torch
 
 from training.Player import Player
 
@@ -8,18 +9,17 @@ from training.Player import Player
 def play_n_self_play_games(game, n_games=100, max_game_length=100, n_playouts=10):
     # init best player here and let it play against itself
     # --> either randomly initialized or load in an already trained model
-    # init in class
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    curr_best_player = Player(device=device)  # load in already trained net?
+    # TODO: load in current best version of neural net
+    curr_best_player = Player(device=device)
 
     for i in range(n_games):
         player = deepcopy(curr_best_player)
         play_self_play_game(game, player, max_game_length, n_playouts)
 
-    # train neural net --> pick some randomly shuffled batches from the generated samples
-    # let new nn play against old nn
-    # if num wins exceeds certain threshold we set the current best player to the new nn
-    # repeat this infinitely
+    # TODO: train neural network --> pick batches from generated self play samples
+    # TODO: evaluation --> pit new neural net against previous version and replace if successful
+    # Skeleton for needed method in Player class.
 
 
 def play_self_play_game(game, player, max_game_length=100, n_playouts=10):
